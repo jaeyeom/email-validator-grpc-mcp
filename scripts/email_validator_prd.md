@@ -100,14 +100,14 @@ The following guidelines should be followed when implementing the Protocol Buffe
    - Create dedicated message types for reusable field groups
 
 4. **Future Extensibility**
-   - Reserve field numbers for anticipated future additions
    - Use oneof for mutually exclusive fields that might expand
    - Design with multi-channel verification in mind (email, phone, etc.)
+   - Plan for backward compatibility in future versions
 
 5. **Field Numbering**
    - Use field numbers 1-15 for frequently used fields (1-byte encoding)
-   - Reserve ranges for future use in each message
-   - Document reserved field numbers and names
+   - Choose field numbers carefully for optimal wire format efficiency
+   - Maintain consistent numbering patterns across similar messages
 
 6. **Versioning Strategy**
    - Follow backward compatibility best practices
@@ -143,9 +143,6 @@ message ContactInfo {
     // Reserved for future phone number validation
     // PhoneNumber phone = 3;
   }
-
-  // Reserved for future contact types
-  reserved 4 to 10;
 }
 
 // PhoneNumber is reserved for future implementation
@@ -170,9 +167,6 @@ message ValidationRequest {
 
   // Optional client-provided metadata for tracking or customization
   map<string, string> metadata = 4;
-
-  // Reserved for future extensions
-  reserved 5 to 10;
 }
 
 // ValidationConfig contains settings for the validation process
@@ -185,9 +179,6 @@ message ValidationConfig {
 
   // Optional template customization parameters
   TemplateOptions template_options = 3;
-
-  // Reserved for future configuration options
-  reserved 4 to 10;
 }
 
 // TemplateOptions allows customization of validation emails/messages
@@ -203,9 +194,6 @@ message TemplateOptions {
 
   // Optional custom variables to include in template
   map<string, string> variables = 4;
-
-  // Reserved for future template options
-  reserved 5 to 10;
 }
 
 // ValidationMethod defines how the validation will be performed
@@ -218,9 +206,6 @@ enum ValidationMethod {
 
   // Validation via code entry
   CODE = 2;
-
-  // Reserved for future validation methods
-  reserved 3 to 10;
 }
 ```
 
@@ -251,9 +236,6 @@ message ValidationRecord {
 
   // Number of verification attempts made
   int32 attempt_count = 8;
-
-  // Reserved for future fields
-  reserved 9 to 15;
 }
 
 // ValidationTimestamps tracks important times in the validation lifecycle
@@ -269,9 +251,6 @@ message ValidationTimestamps {
 
   // When the most recent verification attempt occurred
   google.protobuf.Timestamp last_attempt_at = 4;
-
-  // Reserved for future timestamp fields
-  reserved 5 to 10;
 }
 
 // ValidationStatus represents the current state of a validation
@@ -293,9 +272,6 @@ enum ValidationStatus {
 
   // Validation was canceled by the requestor
   CANCELED = 5;
-
-  // Reserved for future status values
-  reserved 6 to 10;
 }
 ```
 
@@ -311,9 +287,6 @@ message StatusRequest {
     // The contact information to check status for
     ContactInfo contact_info = 2;
   }
-
-  // Reserved for future fields
-  reserved 3 to 10;
 }
 ```
 
@@ -332,9 +305,6 @@ message StatusResponse {
 
   // Timestamps for the validation
   ValidationTimestamps timestamps = 4;
-
-  // Reserved for future fields
-  reserved 5 to 10;
 }
 ```
 
@@ -353,9 +323,6 @@ message VerifyCodeRequest {
 
   // The verification code to check
   string code = 3;
-
-  // Reserved for future fields
-  reserved 4 to 10;
 }
 ```
 
@@ -374,9 +341,6 @@ message CancelRequest {
 
   // Optional reason for cancellation
   string reason = 3;
-
-  // Reserved for future fields
-  reserved 4 to 10;
 }
 ```
 
@@ -395,9 +359,6 @@ message ExtendExpirationRequest {
 
   // Additional time to extend the expiration by
   google.protobuf.Duration extension = 3;
-
-  // Reserved for future fields
-  reserved 4 to 10;
 }
 ```
 
@@ -425,9 +386,6 @@ service EmailValidator {
   // Extends the expiration time of a pending validation
   // Returns the updated validation record with new expiration time
   rpc ExtendExpiration(ExtendExpirationRequest) returns (ValidationRecord);
-
-  // Reserved for future methods
-  reserved 6 to 10;
 }
 ```
 
@@ -441,14 +399,31 @@ service EmailValidator {
 - Database storage (Cloud SQL, Firestore, etc.)
 - Monitoring and logging services
 
-## Infrastructure Requirements
-- Kubernetes or Cloud Run for containerized deployment
-- Cloud SQL or equivalent for persistent storage
-- Redis for rate limiting and temporary token storage
-- Load balancer for traffic distribution
-- Monitoring and alerting setup
-- Independent service modules with well-defined interfaces
-- Observability stack (metrics, logging, tracing)
+## Technical Architecture
+
+1. **Build System**
+   - Bazel for reproducible, hermetic builds
+   - Centralized dependency management
+   - Fast, incremental builds with caching
+   - Cross-platform compatibility
+   - Integrated test execution framework
+
+2. **Development Practices**
+   - Test-driven development (TDD) methodology
+   - Write tests before implementation code
+   - Maintain high test coverage
+   - Automated testing in CI pipeline
+   - Regular test execution during development
+
+3. **Deployment Environment**
+   - Google Cloud Run for containerized services
+   - Cloud SQL for persistent storage
+   - Secret Manager for credentials and sensitive configuration
+   - Redis for rate limiting and temporary token storage
+   - Load balancer for traffic distribution
+   - Monitoring and alerting setup
+   - Independent service modules with well-defined interfaces
+   - Observability stack (metrics, logging, tracing)
 
 ## Modular Design Principles
 
@@ -517,6 +492,8 @@ service EmailValidator {
 # Development Roadmap
 
 ## Phase 1: MVP
+- Set up Bazel build system with initial WORKSPACE and BUILD files
+- Implement test-driven development workflow with initial test suites
 - Basic gRPC service implementation with link-based validation
 - Simple email delivery using SMTP
 - In-memory storage for validation records
