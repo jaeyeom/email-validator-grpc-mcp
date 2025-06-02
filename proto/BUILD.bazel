@@ -1,0 +1,15 @@
+load("@rules_proto_grpc_buf//:defs.bzl", "buf_proto_lint_test")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "proto_files",
+    srcs = glob(["**/*.proto"]),
+)
+
+# Buf lint test for Protocol Buffer files
+buf_proto_lint_test(
+    name = "proto_lint",
+    protos = ["//proto/email_validator:email_validator_proto"],
+    use_rules = ["BASIC"],
+)

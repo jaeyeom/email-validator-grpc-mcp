@@ -27,3 +27,10 @@ node_modules/
 # Task files
 tasks.json
 tasks/
+
+# Bazel
+bazel-bin
+bazel-genfiles
+bazel-email-validator-grpc-mcp
+bazel-out
+bazel-testlogs

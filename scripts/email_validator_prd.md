@@ -123,13 +123,13 @@ message ContactInfo {
   // Types of contact methods supported by the system
   enum Type {
     // Unknown or unspecified contact type
-    CONTACT_TYPE_UNSPECIFIED = 0;
+    TYPE_UNSPECIFIED = 0;
 
     // Email address validation
-    EMAIL = 1;
+    TYPE_EMAIL = 1;
 
     // Reserved for future phone number validation
-    // PHONE = 2;
+    // TYPE_PHONE = 2;
   }
 
   // The type of contact information provided
@@ -152,10 +152,10 @@ message ContactInfo {
 // }
 ```
 
-### ValidationRequest
+### RequestValidationRequest
 ```
-// ValidationRequest initiates the validation of a contact method
-message ValidationRequest {
+// RequestValidationRequest initiates the validation of a contact method
+message RequestValidationRequest {
   // Contact information to validate (email, phone in future)
   ContactInfo contact_info = 1;
 
@@ -202,10 +202,10 @@ enum ValidationMethod {
   VALIDATION_METHOD_UNSPECIFIED = 0;
 
   // Validation via clickable link in email/message
-  LINK = 1;
+  VALIDATION_METHOD_LINK = 1;
 
   // Validation via code entry
-  CODE = 2;
+  VALIDATION_METHOD_CODE = 2;
 }
 ```
 
@@ -259,26 +259,26 @@ enum ValidationStatus {
   VALIDATION_STATUS_UNSPECIFIED = 0;
 
   // Validation has been created but not yet completed
-  PENDING = 1;
+  VALIDATION_STATUS_PENDING = 1;
 
   // Validation was successfully completed
-  VALIDATED = 2;
+  VALIDATION_STATUS_VALIDATED = 2;
 
   // Validation expired before completion
-  EXPIRED = 3;
+  VALIDATION_STATUS_EXPIRED = 3;
 
   // Validation failed (too many attempts, etc.)
-  FAILED = 4;
+  VALIDATION_STATUS_FAILED = 4;
 
   // Validation was canceled by the requestor
-  CANCELED = 5;
+  VALIDATION_STATUS_CANCELED = 5;
 }
 ```
 
-### StatusRequest
+### CheckStatusRequest
 ```
-// StatusRequest retrieves the current status of a validation
-message StatusRequest {
+// CheckStatusRequest retrieves the current status of a validation
+message CheckStatusRequest {
   // One of the following must be provided
   oneof identifier {
     // The validation record ID
@@ -290,10 +290,10 @@ message StatusRequest {
 }
 ```
 
-### StatusResponse
+### CheckStatusResponse
 ```
-// StatusResponse provides the current status of a validation
-message StatusResponse {
+// CheckStatusResponse provides the current status of a validation
+message CheckStatusResponse {
   // Current status of the validation
   ValidationStatus status = 1;
 
@@ -326,10 +326,10 @@ message VerifyCodeRequest {
 }
 ```
 
-### CancelRequest
+### CancelValidationRequest
 ```
-// CancelRequest cancels a pending validation
-message CancelRequest {
+// CancelValidationRequest cancels a pending validation
+message CancelValidationRequest {
   // One of the following must be provided
   oneof identifier {
     // The validation record ID
@@ -369,23 +369,109 @@ message ExtendExpirationRequest {
 service EmailValidator {
   // Initiates the validation process for a contact method (currently email only)
   // Returns a validation record with a unique ID and token
-  rpc RequestValidation(ValidationRequest) returns (ValidationRecord);
+  rpc RequestValidation(RequestValidationRequest) returns (ValidationRecord);
 
   // Retrieves the current status of a validation request
   // Can be queried by validation ID or contact information
-  rpc CheckStatus(StatusRequest) returns (StatusResponse);
+  rpc CheckStatus(CheckStatusRequest) returns (CheckStatusResponse);
 
   // Verifies a code submitted by the user (for CODE validation method)
   // Returns the updated status of the validation
-  rpc VerifyCode(VerifyCodeRequest) returns (StatusResponse);
+  rpc VerifyCode(VerifyCodeRequest) returns (CheckStatusResponse);
 
   // Cancels a pending validation request
   // No effect if validation is already completed or expired
-  rpc CancelValidation(CancelRequest) returns (google.protobuf.Empty);
+  rpc CancelValidation(CancelValidationRequest) returns (CancelValidationResponse);
 
   // Extends the expiration time of a pending validation
   // Returns the updated validation record with new expiration time
-  rpc ExtendExpiration(ExtendExpirationRequest) returns (ValidationRecord);
+  rpc ExtendExpiration(ExtendExpirationRequest) returns (ExtendExpirationResponse);
+}
+```
+
+### Response Messages
+
+#### VerifyCodeResponse
+```
+// VerifyCodeResponse provides the result of a verification code submission
+message VerifyCodeResponse {
+  // Current status of the validation
+  ValidationStatus status = 1;
+
+  // Validation record ID
+  string validation_id = 2;
+
+  // Contact information being validated
+  ContactInfo contact_info = 3;
+
+  // Timestamps for the validation
+  ValidationTimestamps timestamps = 4;
+}
+```
+
+#### CancelValidationResponse
+```
+// CancelValidationResponse provides the result of a validation cancellation request
+message CancelValidationResponse {
+  // Whether the cancellation was successful
+  bool success = 1;
+
+  // Optional message providing additional details
+  string message = 2;
+}
+```
+
+#### RequestValidationResponse
+```
+// RequestValidationResponse provides the result of a validation request
+message RequestValidationResponse {
+  // Unique identifier for this validation record
+  string id = 1;
+
+  // Contact information being validated
+  ContactInfo contact_info = 2;
+
+  // Validation token (link token or verification code)
+  string token = 3;
+
+  // Method used for this validation
+  ValidationMethod method = 4;
+
+  // Current status of the validation
+  ValidationStatus status = 5;
+
+  // Timestamps for tracking the validation lifecycle
+  ValidationTimestamps timestamps = 6;
+
+  // Client-provided metadata from the original request
+  map<string, string> metadata = 7;
+}
+```
+
+#### ExtendExpirationResponse
+```
+// ExtendExpirationResponse provides the result of an expiration extension request
+message ExtendExpirationResponse {
+  // Unique identifier for this validation record
+  string id = 1;
+
+  // Contact information being validated
+  ContactInfo contact_info = 2;
+
+  // Validation token (link token or verification code)
+  string token = 3;
+
+  // Method used for this validation
+  ValidationMethod method = 4;
+
+  // Current status of the validation
+  ValidationStatus status = 5;
+
+  // Timestamps for tracking the validation lifecycle (with updated expiration)
+  ValidationTimestamps timestamps = 6;
+
+  // Client-provided metadata from the original request
+  map<string, string> metadata = 7;
 }
 ```
 
@@ -501,6 +587,7 @@ service EmailValidator {
 - Minimal error handling and logging
 - Basic documentation for integration
 - Modular design with clear interfaces between components
+- Basic observability (metrics and logging)
 - Basic observability (metrics and logging)
 
 ## Phase 2: Core Features Enhancement
