@@ -1,0 +1,47 @@
+#+TITLE: Email Validator Service (gRPC/MCP)
+
+* Overview
+
+The Email Validator Service is a microservice designed to verify email address
+ownership through a validation process. It provides a reliable way for
+applications to confirm that users have access to the email addresses they
+provide during registration or profile updates.
+
+This service helps prevent fraud, reduce spam, and ensure data quality by
+confirming email ownership before granting full access to application features.
+
+* Features
+
+** Core Functionality
+- Email validation request processing
+- Email delivery with verification links or codes
+- Validation verification (link clicks or code entry)
+- Validation status checking
+- Expiration management for pending validations
+- Validation cancellation
+
+** Technical Highlights
+- gRPC API with Protocol Buffers
+- MCP (Managed Control Plane) compatibility
+- Configurable validation methods (link or code)
+- Customizable email templates
+- Flexible expiration settings
+- Client metadata support
+
+* Development
+
+** Testing
+
+Please run tests:
+
+#+begin_src sh
+  bazel test //...:all
+#+end_src
+
+
+** Project Structure
+- ~/proto/~: Protocol Buffer definitions
+
+* License
+
+See the LICENSE file for details.
