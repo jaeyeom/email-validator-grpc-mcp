@@ -1,5 +1,6 @@
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@gazelle//:def.bzl", "gazelle")
+load("@rules_buf//buf:defs.bzl", "buf_format")
 
 # gazelle:prefix github.com/jaeyeom/email-validator-grpc-mcp
 
@@ -34,4 +35,12 @@ buildifier(
     ],
     lint_mode = "warn",
     mode = "diff",
+)
+
+# Export buf configuration
+exports_files(["buf.yaml"])
+
+# Buf formatting for Protocol Buffer files
+buf_format(
+    name = "buf_format",
 )
