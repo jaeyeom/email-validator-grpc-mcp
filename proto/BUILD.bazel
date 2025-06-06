@@ -1,4 +1,5 @@
 load("@rules_proto_grpc_buf//:defs.bzl", "buf_proto_lint_test")
+load("@rules_buf//buf:defs.bzl", "buf_format")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -12,4 +13,9 @@ buf_proto_lint_test(
     name = "proto_lint",
     protos = ["//proto/email_validator:email_validator_proto"],
     use_rules = ["BASIC"],
+)
+
+# Buf format rule for Protocol Buffer files
+buf_format(
+    name = "format",
 )

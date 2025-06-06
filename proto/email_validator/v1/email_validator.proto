@@ -2,13 +2,13 @@ syntax = "proto3";
 
 package proto.email_validator.v1;
 
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/jaeyeom/email-validator-grpc-mcp/proto/email_validator";
 option java_multiple_files = true;
-option java_package = "com.jaeyeom.email_validator";
 option java_outer_classname = "EmailValidatorProto";
+option java_package = "com.jaeyeom.email_validator";
 
 //------------------------------------------------------------------------------
 // Common Types and Enums

@@ -26,5 +26,17 @@ bazel_dep(name = "rules_proto_grpc_buf", version = "5.1.0")
 # Buildifier for Bazel file formatting
 bazel_dep(name = "buildifier_prebuilt", version = "8.0.3")
 
+# Buf rules for protocol buffer formatting
+bazel_dep(name = "rules_buf", version = "0.4.0")
+
+# Configure Buf toolchain
+buf = use_extension("@rules_buf//buf:extensions.bzl", "buf")
+
+# Use the latest buf CLI version
+buf.toolchains(version = "v1.50.0")
+
+# Make buf CLI available for direct usage
+use_repo(buf, "rules_buf_toolchains")
+
 # Register Go toolchains
 register_toolchains("@go_default_sdk//:all")
