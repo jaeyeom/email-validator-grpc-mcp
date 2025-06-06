@@ -29,6 +29,9 @@ bazel_dep(name = "buildifier_prebuilt", version = "8.0.3")
 # Buf rules for protocol buffer formatting
 bazel_dep(name = "rules_buf", version = "0.4.0")
 
+# Aspect rules for linting and formatting
+bazel_dep(name = "aspect_rules_lint", version = "1.4.4")
+
 # Configure Buf toolchain
 buf = use_extension("@rules_buf//buf:extensions.bzl", "buf")
 

@@ -1,4 +1,3 @@
-load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix github.com/jaeyeom/email-validator-grpc-mcp
@@ -27,11 +26,14 @@ gazelle(
     command = "update-repos",
 )
 
-buildifier(
-    name = "buildifier.check",
-    exclude_patterns = [
-        "./.git/*",
+# Format alias
+alias(
+    name = "format",
+    actual = "//tools/format:format",
+)
+
+exports_files(
+    [
+        "MODULE.bazel",
     ],
-    lint_mode = "warn",
-    mode = "diff",
 )
