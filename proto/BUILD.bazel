@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 # Buf lint test for Protocol Buffer files
 buf_proto_lint_test(
     name = "proto_lint",
-    protos = ["//proto/email_validator:email_validator_proto"],
+    protos = ["//proto/email_validator/v1:email_validator_proto"],
     use_rules = [
         "STANDARD",
         "COMMENTS",

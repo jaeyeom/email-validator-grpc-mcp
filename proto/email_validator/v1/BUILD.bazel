@@ -1,10 +1,10 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//proto:def.bzl", "go_proto_library")
 load("@rules_proto//proto:defs.bzl", "proto_library")
 
 proto_library(
     name = "email_validator_proto",
-    srcs = ["v1/email_validator.proto"],
+    srcs = ["email_validator.proto"],
     visibility = ["//visibility:public"],
     deps = [
         "@protobuf//:duration_proto",
@@ -14,8 +14,8 @@ proto_library(
 
 go_proto_library(
     name = "email_validator_go_proto",
-    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
-    importpath = "github.com/jaeyeom/email-validator-grpc-mcp/proto/email_validator/v1",
+    compilers = ["@rules_go//proto:go_grpc"],
+    importpath = "github.com/jaeyeom/email-validator-grpc-mcp/proto/email_validator",
     proto = ":email_validator_proto",
     visibility = ["//visibility:public"],
 )
