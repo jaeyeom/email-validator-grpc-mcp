@@ -2,9 +2,18 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "token",
-    srcs = ["token.go"],
+    srcs = [
+        "storage.go",
+        "token.go",
+    ],
     importpath = "github.com/jaeyeom/email-validator-grpc-mcp/token",
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "storage_test",
+    srcs = ["storage_test.go"],
+    embed = [":token"],
 )
 
 go_test(

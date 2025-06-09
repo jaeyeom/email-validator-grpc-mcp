@@ -143,7 +143,7 @@ func TestToken_IsExpired(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
 
-			tkn := New("test-token", LinkToken, "test-id", testCase.ttl)
+			tkn := New("test-token", TypeLink, "test-id", testCase.ttl)
 
 			if testCase.name == "About to expire token" {
 				// Wait for token to expire
