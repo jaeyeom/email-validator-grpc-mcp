@@ -4,6 +4,7 @@ linters:
     - godot
     - gosec
     - iface
+    - sloglint
     - wrapcheck
   disable:
     - testpackage
