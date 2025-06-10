@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "memory",
+    srcs = ["memory.go"],
+    importpath = "github.com/jaeyeom/email-validator-grpc-mcp/token/storage/memory",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//token",
+    ],
+)
+
+go_test(
+    name = "memory_test",
+    size = "small",
+    srcs = ["memory_test.go"],
+    embed = [":memory"],
+    deps = [
+        "//token",
+    ],
+)

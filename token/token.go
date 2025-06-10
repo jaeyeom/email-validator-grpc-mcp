@@ -29,6 +29,17 @@ const DefaultCodeTokenLength = 4 // 32 bits of entropy
 // DefaultCodeCharset defines the characters used in code tokens.
 const DefaultCodeCharset = "0123456789"
 
+// Common errors for token storage operations.
+var (
+	ErrTokenNotFound       = errors.New("token not found")
+	ErrInvalidToken        = errors.New("invalid token")
+	ErrInvalidTokenType    = errors.New("invalid token type in storage")
+	ErrInvalidTokenKeyType = errors.New("invalid token key type in storage")
+	ErrTokenNil            = errors.New("token cannot be nil")
+	ErrEmptyTokenValue     = errors.New("token value cannot be empty")
+	ErrEmptyValidationID   = errors.New("validation ID cannot be empty")
+)
+
 // Generator provides secure token generation functionality.
 type Generator struct {
 	linkTokenLength int
@@ -130,6 +141,27 @@ func (t *Token) IsExpired() bool {
 	return time.Now().After(t.ValidUntil)
 }
 
+// ValidateToken checks if a token is valid for storage.
+func (t *Token) ValidateToken() error {
+	if t == nil {
+		return errors.New("token cannot be nil")
+	}
+
+	if t.Value == "" {
+		return errors.New("token value cannot be empty")
+	}
+
+	if t.ValidationID == "" {
+		return errors.New("validation ID cannot be empty")
+	}
+
+	if t.ValidUntil.IsZero() {
+		return fmt.Errorf("invalid token: missing expiration time")
+	}
+
+	return nil
+}
+
 // TokenExpiredError represents an error when a token has expired.
 type TokenExpiredError struct {
 	TokenValue string
@@ -146,4 +178,26 @@ func (e *TokenExpiredError) Error() string {
 func IsTokenExpiredError(err error) bool {
 	var expiredErr *TokenExpiredError
 	return errors.As(err, &expiredErr)
+}
+
+// Validate checks if a token is valid for storage.
+// This function is exported for use by storage implementations.
+func Validate(token *Token) error {
+	if token == nil {
+		return ErrTokenNil
+	}
+
+	if token.Value == "" {
+		return ErrEmptyTokenValue
+	}
+
+	if token.ValidationID == "" {
+		return ErrEmptyValidationID
+	}
+
+	if token.ValidUntil.IsZero() {
+		return fmt.Errorf("%w: missing expiration time", ErrInvalidToken)
+	}
+
+	return nil
 }
