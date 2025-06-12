@@ -3,6 +3,7 @@
 package token
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
@@ -178,6 +179,21 @@ func (e *TokenExpiredError) Error() string {
 func IsTokenExpiredError(err error) bool {
 	var expiredErr *TokenExpiredError
 	return errors.As(err, &expiredErr)
+}
+
+// Storage defines the interface for token storage backends.
+type Storage interface {
+	// Store saves a token to the storage backend.
+	Store(ctx context.Context, token *Token) error
+
+	// Retrieve gets a token from the storage backend by its value and type.
+	Retrieve(ctx context.Context, tokenValue string, tokenType Type) (*Token, error)
+
+	// Delete removes a token from the storage backend.
+	Delete(ctx context.Context, tokenValue string, tokenType Type) error
+
+	// DeleteByValidationID removes all tokens associated with a validation ID.
+	DeleteByValidationID(ctx context.Context, validationID string) error
 }
 
 // Validate checks if a token is valid for storage.
