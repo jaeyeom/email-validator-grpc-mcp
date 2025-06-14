@@ -18,7 +18,7 @@ bazel_dep(name = "gazelle", version = "0.43.0")
 bazel_dep(name = "rules_proto", version = "7.1.0")
 
 # Protobuf
-bazel_dep(name = "protobuf", version = "29.3")
+bazel_dep(name = "protobuf", version = "30.2")
 
 # Proto gRPC rules with Buf integration
 bazel_dep(name = "rules_proto_grpc_buf", version = "5.1.0")
