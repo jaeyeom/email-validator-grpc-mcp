@@ -1,10 +1,35 @@
-# Enable Bzlmod for every command
+# Common Bazel settings for the experimental repo
+# startup --output_base=.bazel_output
+
+# Use Bazel modules
 common --enable_bzlmod
 
-# Test settings
+# Build settings - LLM optimized for minimal noise
+build --incompatible_enable_cc_toolchain_resolution
+build --remote_local_fallback
+build --show_progress_rate_limit=60
+build --curses=no
+build --color=no
+build --verbose_failures
+
+# General build safety
+build --incompatible_disallow_empty_glob  # Fail if glob patterns match no files
+
+# Go-specific settings
+build --@rules_go//go/config:race=false   # Race detector (enable for debugging concurrency)
+build --@rules_go//go/config:msan=false   # Memory sanitizer (enable for memory debugging)
+build --@rules_go//go/config:static=true  # Static linking (enable for portable binaries)
+build --@rules_go//go/config:pure=true    # Pure Go without cgo (disable for cross-compilation)
+
+# Test settings - minimal output with meaningful summaries
 test --test_output=errors
+test --test_summary=short
 test --nobuild_tests_only
 
-# C++ settings
-build --cxxopt=-std=c++17
-build --host_cxxopt=-std=c++17
+# Performance settings
+build --jobs=auto
+test --jobs=auto
+
+# Developer settings
+# build --sandbox_debug
+test --test_verbose_timeout_warnings
